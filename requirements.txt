@@ -1,2 +1,7 @@
-python-dotenv
-https://gradio-builds.s3.amazonaws.com/queue-disconnect/v3/gradio-3.4b2-py3-none-any.whl
+diffusers==0.4.1
+fastapi==0.85.0
+gradio @ https://gradio-builds.s3.amazonaws.com/queue-disconnect/v3/gradio-3.4b2-py3-none-any.whl
+huggingface-hub==0.10.0
+Pillow==9.2.0
+torch==1.9.0
+transformers==4.22.2
