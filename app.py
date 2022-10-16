@@ -1,4 +1,3 @@
-import time
 import gradio as gr
 from argparse import ArgumentParser
 import torch
