@@ -1,8 +1,6 @@
 import gradio as gr
 from argparse import ArgumentParser
-import torch
 import logging
-from diffusers import StableDiffusionPipeline
 from multiprocessing import Lock
 from datetime import datetime
 from PIL import Image
@@ -10,15 +8,14 @@ import os
 import json
 from static import *
 
-logging.basicConfig(level=logging.INFO, datefmt="%m/%d/%Y %H:%M:%S",
-                    format='%(asctime)s - %(levelname)s - %(name)s\n%(message)s')
+logging.basicConfig(level=logging.INFO, datefmt="%m/%d/%Y %H:%M:%S", format='%(asctime)s - %(levelname)s - %(name)s\n%(message)s')
 
 def parse_args():
     parser = ArgumentParser()
     bool_fn = lambda x: 'y' in x.lower()
-    parser.add_argument('--test', type=bool_fn, default='yes')
-    parser.add_argument('--host', type=str, default='127.0.0.1')
-    parser.add_argument('--port', type=int, default='7890')
+    parser.add_argument('--test', type=bool_fn, default='yes', help="if you are in testing mode, it will not load diffusion model")
+    parser.add_argument('--host', type=str, default='127.0.0.1', help='specify the ip address')
+    parser.add_argument('--port', type=int, default='7890', help='specify the port')
     parser.add_argument('--device', type=str, default=None, help='if you have multiple devices, specify it as 0, 1, etc.')
     parser.add_argument('--auth', type=str, default=None, help='fill it with yours in huggingface account to download diffusion model weights')
 
@@ -30,8 +27,13 @@ lock = Lock()
 pipe = None
 logger = logging.getLogger('app')
 if args.device is not None:
-    os.environ['CUDA_VISIBLE_DEVICES'] = f'{args.device}'
+    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    os.environ["CUDA_VISIBLE_DEVICES"] = f"{args.device}"
 args.device = 'cuda'
+
+import torch
+from diffusers import StableDiffusionPipeline
+
 if not args.test:
     model_id = "CompVis/stable-diffusion-v1-4"
     pipe = StableDiffusionPipeline.from_pretrained(model_id, use_auth_token=args.auth,
