@@ -1,0 +1,2 @@
+python-dotenv
+https://gradio-builds.s3.amazonaws.com/queue-disconnect/v3/gradio-3.4b2-py3-none-any.whl
