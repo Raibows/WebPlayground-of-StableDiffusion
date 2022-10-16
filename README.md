@@ -1,6 +1,6 @@
-# An Easily Deployment Web Playground of Stable Diffusion Model
+# An Easy Deployment Web Playground of Stable Diffusion Model
 
-This repo provides an easily deployment guide for a web playground of stable diffusion model.
+This repo provides a web playground which can be easily deployed of stable diffusion model.
 
 Stable diffusion model is a state-of-the-art method for generating images from texts.
 
