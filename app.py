@@ -12,8 +12,7 @@ logging.basicConfig(level=logging.INFO, datefmt="%m/%d/%Y %H:%M:%S", format='%(a
 
 def parse_args():
     parser = ArgumentParser()
-    bool_fn = lambda x: 'y' in x.lower()
-    parser.add_argument('--test', type=bool_fn, default='yes', help="if you are in testing mode, it will not load diffusion model")
+    parser.add_argument('--mode', type=str, choices=['fp16', 'full', 'test'], help='test mode will not load the weights; fp16 loads a revised model that help accelerate the process but may be fixed to the image size 512x512; full indicates the original fp32 weights, more precise but more cost.')
     parser.add_argument('--host', type=str, default='127.0.0.1', help='specify the ip address')
     parser.add_argument('--port', type=int, default='7890', help='specify the port')
     parser.add_argument('--device', type=str, default=None, help='if you have multiple devices, specify it as 0, 1, etc.')
@@ -34,10 +33,16 @@ args.device = 'cuda'
 import torch
 from diffusers import StableDiffusionPipeline
 
-if not args.test:
+if args.mode != "test":
     model_id = "CompVis/stable-diffusion-v1-4"
-    pipe = StableDiffusionPipeline.from_pretrained(model_id, use_auth_token=args.auth,
-                                                   revision="fp16", torch_dtype=torch.float16)
+    if args.mode == 'fp16':
+        logger.info("loading/downloading the fp16 revised version")
+        pipe = StableDiffusionPipeline.from_pretrained(model_id, use_auth_token=args.auth, revision="fp16", torch_dtype=torch.float16)
+    elif args.mode == "full":
+        logger.info("loading/downloading fp32 full version")
+        pipe = StableDiffusionPipeline.from_pretrained(model_id, use_auth_token=args.auth, torch_dtype=torch.float32)
+    else:
+        raise NotImplementedError(f"cannot recognize args.mode = {args.mode}")
     pipe = pipe.to(args.device)
     torch.backends.cudnn.benchmark = True
 
@@ -63,7 +68,7 @@ def infer(prompt, height=512, width=512, samples=4, steps=42, scale=7.5, seed=21
     global pipe
     logger.info(f"input args:\nprompt={prompt}\tsize={height}x{width}\tnum={samples}\tstep={steps}\tscale={scale}\tseed={seed}")
     images = []
-    if args.test:
+    if args.mode == "test":
         logger.info("you are in testing mode")
         for i in range(samples):
             images.append(Image.open('images/unsafe.png'))
@@ -118,10 +123,10 @@ if __name__ == '__main__':
             ).style(grid=[3], height="auto")
 
             with gr.Row(elem_id="advanced-options"):
-                samples = gr.Slider(label="Images", minimum=1, maximum=6, value=4, step=1)
+                samples = gr.Slider(label="Images", minimum=1, maximum=9, value=6, step=1)
                 height = gr.Slider(label="height", minimum=16, maximum=1024, value=512, step=16)
                 width = gr.Slider(label="width", minimum=16, maximum=1024, value=512, step=16)
-                steps = gr.Slider(label="Steps", minimum=1, maximum=50, value=45, step=1)
+                steps = gr.Slider(label="Steps", minimum=1, maximum=100, value=45, step=1)
                 scale = gr.Slider(label="Guidance Scale", minimum=0, maximum=50, value=7.5, step=0.1)
                 seed = gr.Slider(
                     label="Seed",

@@ -6,7 +6,7 @@ Stable diffusion model is a state-of-the-art method for generating images from t
 
 There are some platforms (e.g., Huggingface) providing such service for users to play online. However, they often do not provide full custom options for users and thus these models cannot be freely used.
 
-This repo based on Huggingface web demo provide an easy way to deploy your playground and unlock all options for the diffusion model. 
+This repo based on Huggingface web demo provides an easy way to deploy your playground and unlock all options for the diffusion model. 
 
 
 
@@ -40,26 +40,26 @@ This repo based on Huggingface web demo provide an easy way to deploy your playg
 
 **Launch it using:**
 
-```bash
-python app.py --test no --device 0 --auth your_auth_token --port 7890 --host 127.0.0.1 
+```shell
+python app.py --mode full --device 0 --auth your_auth_token --port 7890 --host 127.0.0.1
 ```
 
 Open your browser with ``127.0.0.1:7890``, and have fun.
 
 **Full usage:**
 
-```bash
+```shell
 python app.py -h
 
-usage: app.py [-h] [--test TEST] [--host HOST] [--port PORT] [--device DEVICE] [--auth AUTH]
+usage: app.py [-h] [--mode {fp16,full,test}] [--host HOST] [--port PORT] [--device DEVICE] [--auth AUTH]
 
 optional arguments:
-  -h, --help       show this help message and exit
-  --test TEST      if you are in testing mode, it will not load diffusion model
-  --host HOST      specify the ip address
-  --port PORT      specify the port
-  --device DEVICE  if you have multiple devices, specify it as 0, 1, etc.
-  --auth AUTH      fill it with yours in huggingface account to download diffusion model weights
+  -h, --help              show this help message and exit
+  --mode {fp16,full,test} test mode will not load the weights; fp16 loads a revised model that help accelerate the process but may be fixed to the image size 512x512; full indicates the original fp32 weights, more precise but more cost.
+  --host HOST             specify the ip address
+  --port PORT             specify the port
+  --device DEVICE         if you have multiple devices, specify it as 0, 1, etc.
+  --auth AUTH             fill it with yours in huggingface account to download diffusion model weights
 ```
 
 If you have any questions, please feel free to have an issue or discussion.
@@ -74,4 +74,4 @@ If you have any questions, please feel free to have an issue or discussion.
 
 The codes for web playground is under GPLv3 license.
 
-The license for stable diffusion model, please refer [here](https://huggingface.co/spaces/CompVis/stable-diffusion-license).
+The license for stable diffusion model, please refer [this](https://huggingface.co/spaces/CompVis/stable-diffusion-license).
